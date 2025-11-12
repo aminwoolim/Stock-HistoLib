@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Stock Analytics — Grid</title>
+
+  <!-- Version to help cache-busting -->
+  <script>window.APP_VERSION="2.1.0";</script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="styles.css?v=2.1.0">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js?v="></script>
+</head>
+
+<body>
+  <header>
+    <h1>Stock HistoLibrary</h1>
+    <div class="hint">Hover a card to see the glow · Click to open details</div>
+  </header>
+
+  <div class="wrap">
+    <div id="grid" class="grid"></div>
+  </div>
+
+  <footer>Tip: press <b>ESC</b> to close a detail panel.</footer>
+
+  <!-- Modal -->
+  <div id="modal" class="modal" aria-hidden="true">
+    <div class="sheet" role="dialog" aria-modal="true">
+      <div class="sheethead">
+        <h2 id="modalTitle">Ticker</h2>
+        <button class="xbtn" id="close">Close</button>
+      </div>
+      <div class="pillrow" id="statPills"></div>
+      <div class="row2" id="chartsRow" style="margin-top:10px">
+        <canvas id="priceChart" height="240"></canvas>
+        <canvas id="annualChart" height="240"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="app.js?v=2.1.0"></script>
+</body>
+</html>

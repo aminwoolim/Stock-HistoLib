@@ -1,0 +1,54 @@
+version: 0.2
+
+env:
+  variables:
+    # CodeBuild console -> set these at the project level instead of hardcoding here:
+    # SITE_BUCKET: stock-analytics-site-aminwoolim
+    # DISTRIBUTION_ID: EXXXXXXXXXXXXX
+    # (Optional) API_BASE: https://75mogiezvd.execute-api.us-east-1.amazonaws.com
+  shell: bash
+
+phases:
+  install:
+    commands:
+      - echo "Using AWS CLI preinstalled in CodeBuild standard image"
+  pre_build:
+    commands:
+      - echo "Pre-build: print vars"
+      - echo "Bucket: $SITE_BUCKET  Dist: $DISTRIBUTION_ID"
+      # (Optional) generate config.json so you don't edit HTML for API URL
+      - |
+        if [ -n "$API_BASE" ]; then
+          echo "{\"BASE\":\"$API_BASE\"}" > config.json
+        fi
+  build:
+    commands:
+      - echo "Deploying static assets to s3://$SITE_BUCKET"
+      # 1) Upload everything except index.html with long cache
+      - aws s3 sync . s3://$SITE_BUCKET --delete \
+          --exclude ".git/*" --exclude ".github/*" \
+          --exclude "buildspec.yml" --exclude "README.md" \
+          --exclude "index.html" \
+          --cache-control "public, max-age=31536000, immutable"
+
+      # 2) Upload index.html with no-cache so updates show immediately
+      - aws s3 cp index.html s3://$SITE_BUCKET/index.html \
+          --cache-control "no-cache, max-age=0" \
+          --content-type "text/html"
+
+      # 3) If config.json exists, upload it as no-cache too (so env changes apply instantly)
+      - |
+        if [ -f config.json ]; then
+          aws s3 cp config.json s3://$SITE_BUCKET/config.json \
+            --cache-control "no-cache, max-age=0" \
+            --content-type "application/json"
+        fi
+
+  post_build:
+    commands:
+      - echo "Invalidating CloudFront"
+      - aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION_ID" --paths "/index.html" "/"
+artifacts:
+  files:
+    - '**/*'
+  discard-paths: yes
