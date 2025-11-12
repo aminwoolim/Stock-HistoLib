@@ -11,6 +11,7 @@ phases:
   install:
     commands:
       - echo "AWS CLI: $(aws --version)"
+
   pre_build:
     commands:
       - echo "Bucket: $SITE_BUCKET  Dist: $DISTRIBUTION_ID"
@@ -20,6 +21,7 @@ phases:
           echo "{\"BASE\":\"$API_BASE\"}" > config.json
           echo "Wrote config.json with BASE=$API_BASE"
         fi
+
   build:
     commands:
       - echo "Deploying static assets to s3://$SITE_BUCKET"
@@ -42,6 +44,7 @@ phases:
             --cache-control "no-cache, max-age=0" \
             --content-type "application/json"
         fi
+
   post_build:
     commands:
       - echo "Invalidating CloudFront"
