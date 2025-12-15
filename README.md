@@ -1,91 +1,108 @@
-# 📈 Stock Analytics — Serverless AWS Data Pipeline + Dashboard
+# 📈 Stock Analytics Learning Platform (AWS Serverless)
 
-A lightweight, serverless analytics platform that ingests stock price CSVs, 
-computes key financial metrics, and displays them through an interactive 
-CloudFront-hosted UI. Deployed automatically via GitHub → CodePipeline → CodeBuild → S3.
+This project is an AWS-powered, serverless stock analysis platform that processes historical stock price data, computes key financial statistics, and explains what each statistic means in clear, beginner-friendly language so users can learn while exploring the data.
 
+---
 
-## 🚀 Features
+## 🧠 What This Project Does
 
-- Automated ETL Pipeline
-  - Upload CSVs → S3 triggers Lambda to parse + compute:
-    - Volatility, CAGR, moving averages, annual returns, drawdowns, etc.
-  - Results stored in DynamoDB.
-- REST API (API Gateway + Lambda)
-  - /tickers — list processed tickers
-  - /stats/{ticker} — detailed analytics
-  - /hist/{ticker} — historical closing prices
-- Interactive Frontend
-  - Hosted in S3, globally delivered via CloudFront
-  - Grid of stock “cards” with hover glow
-  - On-click modal with charts (Chart.js) + yearly stats
-  - Cache-busting + long-cache optimization
-- Full CI/CD
-  - GitHub → CodePipeline → CodeBuild
-  - Auto-syncs UI files to S3
-  - Auto-invalidation of CloudFront caches
+- Ingests historical stock data (CSV) stored in Amazon S3  
+- Uses AWS Lambda to calculate summary statistics such as:
+  - Average closing price  
+  - Daily volatility  
+  - Highest and lowest prices  
+- Stores computed results in DynamoDB  
+- Exposes a REST API via API Gateway to retrieve stock summaries  
+- Serves a static web UI that displays both statistics and plain-English explanations  
+- Automatically deploys frontend updates using GitHub, CodePipeline, and CodeBuild  
 
+This project blends cloud-native development with data science fundamentals while remaining free-tier friendly.
 
+---
 
-## 🧱 Architecture
+## 🏗️ Architecture Overview
 
-AWS Services Used:
+### Backend
+- **Amazon S3** – Stores raw stock data files  
+- **AWS Lambda** – Processes data and computes statistics  
+- **Amazon DynamoDB** – Persists computed summaries and metadata  
+- **Amazon API Gateway** – REST endpoints for querying results  
 
-```S3 · Lambda · DynamoDB · API Gateway · CloudFront · CodePipeline · CodeBuild · IAM · CloudWatch```
+### Frontend
+- Static website built with HTML, CSS, and JavaScript  
+- Hosted on **Amazon S3**  
+- Delivered globally via **Amazon CloudFront**  
 
-Workflow:
+### CI/CD
+- **GitHub** – Source of truth  
+- **AWS CodePipeline** – Orchestrates deployments  
+- **AWS CodeBuild** – Builds and deploys site assets to S3 and invalidates CloudFront cache  
 
-```CSV Upload → S3 Event → Lambda ETL → DynamoDB → API → Frontend → CloudFront```
+---
 
+## 🔄 How Updates Work
 
-## 🗂️ Repository Structure
+This project follows a GitOps-style workflow:
 
-```.
-├── index.html           # Main UI template (loads app.js + styles.css)
-├── app.js               # Frontend logic, API calls, charts, modal controls
-├── styles.css           # Custom theme (dark UI, grid, glow effects)
-├── config.json          # (Optional) API base URL, auto-generated
-├── buildspec.yml        # CodeBuild deploy script
-├── README.md            # This file
-└── /assets (optional)   # Logos or images
-```
+1. All code changes are made locally in the GitHub repository  
+2. Changes are committed and pushed to GitHub  
+3. CodePipeline automatically triggers  
+4. CodeBuild deploys frontend files to S3 and invalidates CloudFront  
+5. Updated changes are served via the CloudFront distribution  
 
+> ⚠️ Edits made directly in the AWS Console (for example, Lambda code) are not tracked in GitHub and may be overwritten by the pipeline.
 
+---
 
-## ▶️ Usage
+## 🌐 Frontend Behavior
 
-1. Upload TICKER.csv (e.g., AAPL.csv) to the data S3 bucket
-2.	Lambda automatically processes it and updates DynamoDB
-3.	Visit the CloudFront URL to view updated cards & charts
-4.	Push UI changes to GitHub → pipeline deploys automatically
+- The UI fetches stock summaries from API Gateway  
+- Each statistic is displayed with:
+  - A readable label  
+  - The numeric value  
+  - A short explanation of what it represents  
+- Versioned assets (`?v=x.y.z`) are used to prevent browser caching issues  
 
+---
 
+## 🛠️ Technologies Used
 
-## 📌 Example Analytics
-- Price change %
-- Daily returns / volatility
-- Best & worst day
-- Max drawdown
-- CAGR
-- MA20 / MA50
-- Per-year returns + volatility
+- AWS Lambda  
+- Amazon S3  
+- Amazon DynamoDB  
+- Amazon API Gateway  
+- Amazon CloudFront  
+- AWS CodePipeline  
+- AWS CodeBuild  
+- Amazon CloudWatch  
+- JavaScript, HTML, CSS  
+- Python (data processing)  
 
+---
 
+## 🎯 Why This Project Exists
 
-## 🛠️ Requirements
-- AWS account with access to:
-- S3 buckets (data + site)
-- Lambda functions
-- DynamoDB table (StockStats)
-- API Gateway REST API
-- CloudFront distribution
-- CodePipeline + CodeBuild
-- GitHub repo connected via CodeStar Connections
+This project was built to:
+- Practice AWS Developer Associate concepts  
+- Learn serverless data processing patterns  
+- Demonstrate CI/CD pipelines in AWS  
+- Make financial statistics approachable for beginners  
+- Show how cloud services support data science workflows  
 
+---
 
+## 🚀 Future Enhancements
 
-## 📄 License
+- Beginner vs advanced learning modes  
+- Expanded metric glossary and explanations  
+- Step Functions for multi-stage processing  
+- Authentication with Amazon Cognito  
+- Data visualization dashboards  
+- Streaming or near-real-time data ingestion  
 
-MIT
+---
 
+## 🧩 Key Takeaway
+
+This project is not just about computing stock statistics — it is about teaching what those statistics mean using scalable, serverless AWS infrastructure.
 
