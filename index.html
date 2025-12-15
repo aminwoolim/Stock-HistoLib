@@ -3,46 +3,219 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Stock Analytics — Grid</title>
+  <title>Stock HistoLibrary — Learn Stock Analytics</title>
 
   <!-- Version to help cache-busting -->
-  <script>window.APP_VERSION="2.1.0";</script>
+  <script>window.APP_VERSION="3.0.0";</script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- CSS -->
-  <link rel="stylesheet" href="styles.css?v=2.1.0">
+  <link rel="stylesheet" href="styles.css?v=3.0.0">
 
   <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js?v="></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
   <header>
-    <h1>Stock HistoLibrary</h1>
-    <div class="hint">Hover a card to see the glow · Click to open details</div>
+    <div class="header-left">
+      <div class="logo-mark">📈</div>
+      <div class="header-text">
+        <h1>Stock HistoLibrary</h1>
+        <span class="tagline">Learn to read the market</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="ver-badge">v<span id="ver"></span></span>
+    </div>
   </header>
 
-  <div class="wrap">
-    <div id="grid" class="grid"></div>
-  </div>
+  <!-- Navigation Tabs -->
+  <nav class="main-nav">
+    <button class="nav-tab active" data-tab="dashboard">
+      <span class="tab-icon">📊</span>
+      <span class="tab-label">Dashboard</span>
+    </button>
+    <button class="nav-tab" data-tab="learn">
+      <span class="tab-icon">📚</span>
+      <span class="tab-label">Learn Stats</span>
+    </button>
+    <button class="nav-tab" data-tab="glossary">
+      <span class="tab-icon">📖</span>
+      <span class="tab-label">Glossary</span>
+    </button>
+    <button class="nav-tab" data-tab="quiz">
+      <span class="tab-icon">🎯</span>
+      <span class="tab-label">Quiz</span>
+    </button>
+  </nav>
 
-  <footer>Tip: press <b>ESC</b> to close a detail panel.</footer>
+  <!-- Dashboard Section -->
+  <section id="dashboard-section" class="section active">
+    <div class="section-header">
+      <div class="search-filter-bar">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="Search tickers...">
+        </div>
+        <select id="sortBy" class="sort-select">
+          <option value="alpha">Sort: A → Z</option>
+          <option value="alpha-desc">Sort: Z → A</option>
+          <option value="change-desc">Highest % Change</option>
+          <option value="change-asc">Lowest % Change</option>
+          <option value="volatility-desc">Most Volatile</option>
+          <option value="volatility-asc">Least Volatile</option>
+          <option value="cagr-desc">Best CAGR</option>
+        </select>
+      </div>
+      <p class="section-hint">💡 Click any card to see detailed charts • Hover over <span class="info-icon-inline">ℹ️</span> icons to learn what each stat means</p>
+    </div>
+    <div class="wrap">
+      <div id="grid" class="grid"></div>
+    </div>
+  </section>
 
-  <!-- Modal -->
+  <!-- Learn Section -->
+  <section id="learn-section" class="section">
+    <div class="wrap">
+      <div class="learn-hero">
+        <h2>📚 Understanding Stock Statistics</h2>
+        <p class="learn-intro">Master the key metrics that professional investors use to analyze stocks. Each statistic tells a different part of the story.</p>
+      </div>
+      <div id="learn-cards" class="learn-grid">
+        <!-- Dynamically generated -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Glossary Section -->
+  <section id="glossary-section" class="section">
+    <div class="wrap">
+      <div class="glossary-hero">
+        <h2>📖 Stock Market Glossary</h2>
+        <p>Quick reference for all the terms you'll encounter</p>
+        <div class="glossary-search">
+          <input type="text" id="glossarySearch" placeholder="Search terms...">
+        </div>
+      </div>
+      <div id="glossary-list" class="glossary-grid">
+        <!-- Dynamically generated -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Quiz Section -->
+  <section id="quiz-section" class="section">
+    <div class="wrap">
+      <div class="quiz-container">
+        <div class="quiz-hero" id="quiz-start">
+          <h2>🎯 Test Your Knowledge</h2>
+          <p>Put your stock analysis skills to the test with our interactive quiz!</p>
+          <div class="quiz-stats">
+            <div class="stat-box">
+              <span class="stat-num" id="quiz-total">10</span>
+              <span class="stat-label">Questions</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-num" id="best-score">—</span>
+              <span class="stat-label">Best Score</span>
+            </div>
+          </div>
+          <button class="btn-primary" id="start-quiz">Start Quiz</button>
+        </div>
+        <div class="quiz-active hidden" id="quiz-active">
+          <div class="quiz-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" id="quiz-progress-fill"></div>
+            </div>
+            <span class="progress-text">Question <span id="q-current">1</span> of <span id="q-total">10</span></span>
+          </div>
+          <div class="quiz-question" id="quiz-question">
+            <!-- Question content -->
+          </div>
+          <div class="quiz-options" id="quiz-options">
+            <!-- Options -->
+          </div>
+          <div class="quiz-feedback hidden" id="quiz-feedback">
+            <!-- Feedback -->
+          </div>
+          <button class="btn-secondary hidden" id="next-question">Next Question →</button>
+        </div>
+        <div class="quiz-results hidden" id="quiz-results">
+          <div class="results-icon" id="results-icon">🏆</div>
+          <h2 id="results-title">Great Job!</h2>
+          <p class="results-score">You scored <span id="final-score">8</span> out of <span id="final-total">10</span></p>
+          <div class="results-breakdown" id="results-breakdown">
+            <!-- Breakdown -->
+          </div>
+          <button class="btn-primary" id="retry-quiz">Try Again</button>
+          <button class="btn-secondary" id="review-answers">Review Answers</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Stock HistoLibrary — Your gateway to understanding market data</p>
+    <p class="footer-hint">Press <kbd>ESC</kbd> to close modals • Data updates daily</p>
+  </footer>
+
+  <!-- Stock Detail Modal -->
   <div id="modal" class="modal" aria-hidden="true">
     <div class="sheet" role="dialog" aria-modal="true">
       <div class="sheethead">
-        <h2 id="modalTitle">Ticker</h2>
-        <button class="xbtn" id="close">Close</button>
+        <div class="modal-title-row">
+          <h2 id="modalTitle">Ticker</h2>
+          <span class="modal-subtitle">Detailed Analysis</span>
+        </div>
+        <button class="xbtn" id="close">✕ Close</button>
       </div>
       <div class="pillrow" id="statPills"></div>
-      <div class="row2" id="chartsRow" style="margin-top:10px">
-        <canvas id="priceChart" height="240"></canvas>
-        <canvas id="annualChart" height="240"></canvas>
+      <div class="charts-section">
+        <div class="chart-container">
+          <h3>📈 Price History with Moving Averages</h3>
+          <p class="chart-hint">Moving averages smooth out price fluctuations to reveal trends</p>
+          <canvas id="priceChart" height="280"></canvas>
+        </div>
+        <div class="chart-container">
+          <h3>📊 Annual Returns</h3>
+          <p class="chart-hint">Year-over-year performance comparison</p>
+          <canvas id="annualChart" height="280"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Tooltip Modal -->
+  <div id="info-modal" class="info-modal" aria-hidden="true">
+    <div class="info-sheet">
+      <div class="info-header">
+        <span class="info-icon-large" id="info-icon">📊</span>
+        <h3 id="info-title">Stat Name</h3>
+        <button class="info-close" id="info-close">✕</button>
+      </div>
+      <div class="info-body">
+        <div class="info-section">
+          <h4>What is it?</h4>
+          <p id="info-description"></p>
+        </div>
+        <div class="info-section">
+          <h4>How to interpret</h4>
+          <p id="info-interpretation"></p>
+        </div>
+        <div class="info-section interpretation-guide">
+          <h4>Quick Guide</h4>
+          <div id="info-guide"></div>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- JS -->
-  <script src="app.js?v=2.1.0"></script>
+  <script src="app.js?v=3.0.0"></script>
 </body>
 </html>
